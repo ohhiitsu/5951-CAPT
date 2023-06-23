@@ -8,8 +8,8 @@ function Navbar() {
         CAPT CL-APP
       </Link>
       <ul>
-        <CustomLink to="/pricing">Pricing</CustomLink>
-        <CustomLink to="/about">About</CustomLink>
+        <CustomLink to="/windowclosing">Window Closing</CustomLink>
+        <CustomLink to="/loungebooking">Lounge Booking</CustomLink>
         <CustomLink to="/login">Log In</CustomLink>
       </ul>
     </nav>
