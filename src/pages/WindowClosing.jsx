@@ -12,9 +12,8 @@ function WindowClosing() {
     RoomNumber: ''
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      const windowClosingCollection = collection(firestore, "windowClosingRequests");
+  const fetchData = async () => {
+    const windowClosingCollection = collection(firestore, "windowClosingRequests");
       const windowClosingQuery = query(windowClosingCollection);
       const querySnapshot = await getDocs(windowClosingQuery);
       const fetchWindowClosingData = [];
@@ -23,6 +22,8 @@ function WindowClosing() {
       });
       setWindowClosing(fetchWindowClosingData);
     }
+
+  useEffect(() => {
     fetchData();
   }, [firestore]);
 
@@ -32,16 +33,35 @@ function WindowClosing() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    async function fetchData() {
-      const windowClosingCollection = collection(firestore, "windowClosingRequests");
-      const windowClosingQuery = query(windowClosingCollection);
-      const querySnapshot = await getDocs(windowClosingQuery);
-      const fetchWindowClosingData = [];
-      querySnapshot.forEach((doc) => {
-        fetchWindowClosingData.push({ Id: doc.id, ...doc.data() });
+    if (!inputData.RoomNumber) {
+      toast.error('Please enter a room number.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light"
       });
-      setWindowClosing(fetchWindowClosingData);
+      return;
     }
+    
+    const existingRequest = windowclosing.find((wc) => wc.RoomNumber === inputData.RoomNumber && !wc.Completed);
+    if (existingRequest) {
+      toast.error('There is already an open request for this room number.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light"
+      });
+      return;
+    }
+
     try {
       const windowClosingCollection = collection(firestore, "windowClosingRequests");
       const newWindowClosingRequest = {
@@ -51,10 +71,10 @@ function WindowClosing() {
       await addDoc(windowClosingCollection, newWindowClosingRequest);
       toast.success('Window Closing Request Submitted!', {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         draggable: true,
         progress: undefined,
         theme: "light"
@@ -70,16 +90,6 @@ function WindowClosing() {
   };
 
   const handleCheckboxClick = (id) => {
-    async function fetchData() {
-      const windowClosingCollection = collection(firestore, "windowClosingRequests");
-      const windowClosingQuery = query(windowClosingCollection);
-      const querySnapshot = await getDocs(windowClosingQuery);
-      const fetchWindowClosingData = [];
-      querySnapshot.forEach((doc) => {
-        fetchWindowClosingData.push({ Id: doc.id, ...doc.data() });
-      });
-      setWindowClosing(fetchWindowClosingData);
-    }
     const windowClosingCollection = collection(firestore, "windowClosingRequests");
     const requestRef = doc(windowClosingCollection, id);
     deleteDoc(requestRef);
@@ -88,46 +98,41 @@ function WindowClosing() {
 
   return (
     <>
-      <div className="hero min-h-screen bg-slate-800">
-        <div className='max-w-5xl mx-auto'>
-          <form className='flex' onSubmit={handleFormSubmit}>
-            <input
-              type="text"
-              onChange={(e) => handleInputChange('RoomNumber', e.target.value)}
-              value={inputData.RoomNumber}
-              placeholder='Room Number'
-              className='m-4 text-slate-50 bg-transparent border border-slate-700 focus:ring-slate-400 focus:outline-none p-4 rounded-lg'
-            />
-            <button type="submit" className='m-4 border border-purple-500 p-5 rounded-lg transition-opacity bg-purple-600 bg-opacity-30 hover:bg-opacity-50 text-slate-50'>
-              New Window Closing Request
-            </button>
-          </form>
-          <div className='flex'>
-            <p className='m-4 text-slate-50'>Outstanding Requests</p>
-          </div>
-          <table className='table w-full bg-transparent text-slate-50'>
-            <thead>
-              <tr>
-                <th className='bg-slate-900 border border-slate-700'>Room Number</th>
-                <th className='bg-slate-900 border border-slate-700'>Request Completed?</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                windowclosing
-                  .filter((wc) => wc.Completed !== true)
-                  .map((wc) => (
-                    <tr key={wc.Id}>
-                      <td className='bg-slate-800 border border-slate-700'>{wc.RoomNumber}</td>
-                      <td className='bg-slate-800 border border-slate-700'>
-                        <Checkbox checked={wc.Completed} onChange={() => handleCheckboxClick(wc.Id)} />
-                      </td>
-                    </tr>
-                  ))
-              }
-            </tbody>
-          </table>
+      <div>
+        <form onSubmit={handleFormSubmit}>
+          <input
+            type="text"
+            onChange={(e) => handleInputChange('RoomNumber', e.target.value)}
+            value={inputData.RoomNumber}
+            placeholder='Room Number'
+          />
+          <button type="submit">
+            New Window Closing Request
+          </button>
+        </form>
+        <div>
+          <p>Outstanding Requests</p>
         </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Room Number</th>
+              <th>Request Completed?</th>
+            </tr>
+          </thead>
+          <tbody>
+            {windowclosing
+              .filter((wc) => wc.Completed !== true)
+              .map((wc) => (
+                <tr key={wc.Id}>
+                  <td>{wc.RoomNumber}</td>
+                  <td>
+                    <Checkbox checked={wc.Completed} onChange={() => handleCheckboxClick(wc.Id)} />
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </div>
       <ToastContainer />
     </>
