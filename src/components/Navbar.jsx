@@ -9,8 +9,8 @@ function Navbar() {
       </Link>
       <ul>
         <CustomLink to="/WindowClosing">Window Closing</CustomLink>
-        <CustomLink to="/pricing">Pricing</CustomLink>
-        <CustomLink to="/about">About</CustomLink>
+        <CustomLink to="/pricing">E-Black Market</CustomLink>
+        <CustomLink to="/about">Lounge Booking</CustomLink>
         <CustomLink to="/login">Log In</CustomLink>
       </ul>
     </nav>
