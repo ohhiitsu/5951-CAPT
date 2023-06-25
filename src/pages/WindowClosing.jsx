@@ -14,14 +14,14 @@ function WindowClosing() {
 
   const fetchData = async () => {
     const windowClosingCollection = collection(firestore, "windowClosingRequests");
-      const windowClosingQuery = query(windowClosingCollection);
-      const querySnapshot = await getDocs(windowClosingQuery);
-      const fetchWindowClosingData = [];
-      querySnapshot.forEach((doc) => {
-        fetchWindowClosingData.push({ Id: doc.id, ...doc.data() });
-      });
-      setWindowClosing(fetchWindowClosingData);
-    }
+    const windowClosingQuery = query(windowClosingCollection);
+    const querySnapshot = await getDocs(windowClosingQuery);
+    const fetchWindowClosingData = [];
+    querySnapshot.forEach((doc) => {
+      fetchWindowClosingData.push({ Id: doc.id, ...doc.data() });
+    });
+    setWindowClosing(fetchWindowClosingData);
+  }
 
   useEffect(() => {
     fetchData();
@@ -29,6 +29,11 @@ function WindowClosing() {
 
   const handleInputChange = (field, value) => {
     setInputData({ ...inputData, [field]: value });
+  };
+
+  const validateRoomNumber = () => {
+    const regex = /^#1[5-7]-\d{2}$/;
+    return regex.test(inputData.RoomNumber);
   };
 
   const handleFormSubmit = async (e) => {
@@ -44,9 +49,20 @@ function WindowClosing() {
         progress: undefined,
         theme: "light"
       });
+    } else if (!validateRoomNumber()) {
+      toast.error('Invalid room number.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light"
+      });
       return;
     }
-    
+
     const existingRequest = windowclosing.find((wc) => wc.RoomNumber === inputData.RoomNumber && !wc.Completed);
     if (existingRequest) {
       toast.error('There is already an open request for this room number.', {

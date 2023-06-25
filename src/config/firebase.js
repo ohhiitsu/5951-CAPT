@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore} from 'firebase/firestore';
+import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -33,3 +34,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+const storage = getStorage(app);
+
+// to deploy onto hosting
+// npm run build
+// firebase init
+//  What do you want to use as your public directory? build
+// Set up automatic builds and deploys with GitHub? No
+// File build/404.html already exists. Overwrite? No
+// ? File build/index.html already exists. Overwrite? No
+
+
+// firebase deploy --only hosting:captclapp
+
+// Ensure that firebase.json is the following file
+//{
+  //"hosting": {
+    //"public": "build",
+    //"site": "captclapp",
+    //"ignore": [
+     // "firebase.json",
+      //"**/.*",
+     // "**/node_modules/**"
+   // ]
+ // }
+//}

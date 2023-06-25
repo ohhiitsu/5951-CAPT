@@ -9,7 +9,7 @@ const SignUp = (e) => {
     const [password, setPassword] = useState('');
     const signUp = (e) => {
         e.preventDefault();
-        email.toLowerCase().includes('nus.edu.sg')  ? 
+        email.toLowerCase().includes('nus.edu')  ? 
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             console.log(userCredential)
