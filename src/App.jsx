@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import WindowClosing from "./pages/WindowClosing";
 import LoungeBooking from "./pages/LoungeBooking";
+import EBlackMarket from "./pages/eBlackMarket";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route element={<ProtectedRoutes />}>
             <Route path="/windowclosing" element={<WindowClosing />}></Route>
-            <Route path="/eblackmarket" element={<WindowClosing />}></Route>
+            <Route path="/eblackmarket" element={<EBlackMarket />}></Route>
             <Route path="/loungebooking" element={<LoungeBooking />}></Route>
           </Route>
         </Routes>

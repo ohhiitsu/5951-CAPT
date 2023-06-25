@@ -54,4 +54,55 @@ body {
   background-color: #777;
 }
 
+.product-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.product-card {
+  /* Adjust the width to fit three cards per row */
+  width: calc(33.33% - 20px); 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.product-image-container {
+  text-align: center;
+}
+
+.product-image-container img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+}
+
+.product-details {
+  margin-top: 10px;
+}
+
+.product-name {
+  font-weight: bold;
+}
+
+.product-price {
+  color: green;
+}
+
+.product-quantity {
+  color: #888;
+}
+
+.success-msg {
+  color: green;
+  margin-top: 10px;
+}
+
+.paynow {
+  width: 100%;
+  max-height: 250px; 
+  object-fit: contain;
+}
 
