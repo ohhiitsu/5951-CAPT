@@ -10,6 +10,7 @@ function Navbar() {
       <ul>
         <CustomLink to="/windowclosing">Window Closing</CustomLink>
         <CustomLink to="/eblackmarket">E-Black Market</CustomLink>
+        <CustomLink to="/eblackmarketadmin">E-Black Market Admin</CustomLink>
         <CustomLink to="/loungebooking">Lounge Booking</CustomLink>
         <CustomLink to="/login">Log In</CustomLink>
       </ul>

@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { auth } from "../config/firebase";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function LoungeBooking() {
   const [locations, setLocations] = useState([]);
@@ -23,8 +24,8 @@ function LoungeBooking() {
   const [selectedLounge, setSelectedLounge] = useState('');
   const [filterApplied, setFilterApplied] = useState(false);
   const currentUserEmail = auth.currentUser ? auth.currentUser.email : '';
-
   const firestore = getFirestore();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchLocations();
@@ -32,14 +33,17 @@ function LoungeBooking() {
   }, []);
 
   const fetchLocations = async () => {
+    setLoading(true);
     try {
       const locationsCollection = collection(firestore, 'LoungeLocations');
       const locationsSnapshot = await getDocs(locationsCollection);
       const fetchedLocations = locationsSnapshot.docs.map((doc) => doc.data());
       fetchedLocations.sort((a, b) => a.Name.localeCompare(b.Name));
       setLocations(fetchedLocations);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -91,12 +95,6 @@ function LoungeBooking() {
   const convertTimeToNumber = (timeString) => {
     const [hours, minutes] = timeString.split(':');
     return parseInt(hours) * 60 + parseInt(minutes);
-  };
-  
-  const convertNumberToTime = (minutes) => {
-    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
-    const mins = (minutes % 60).toString().padStart(2, '0');
-    return `${hours}:${mins}`;
   };
   
   const convertTimeStringToDate = (dateString, timeString) => {
@@ -154,6 +152,32 @@ function LoungeBooking() {
     event.preventDefault();
   
     if (!selectedLocation || !selectedStartTime || !selectedEndTime || !selectedDate) {
+      toast.error('Please ensure all fileds are filled before submitting', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light"
+      });
+      return;
+    }
+
+    const selectedValidDateTimeCheck = convertTimeStringToDate(selectedDate, selectedStartTime);
+
+    if (new Date() > selectedValidDateTimeCheck) {
+      toast.error('Reservation date and time has passed', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light"
+      });
       return;
     }
   
@@ -226,14 +250,29 @@ function LoungeBooking() {
     }
   };
 
-  const handleEditBooking = (bookingId) => {
-    if (auth.currentUser && auth.currentUser.email === currentUserEmail) {
+  const handleEditBooking = (bookingId, bookingUser) => {
+    if (bookingUser === currentUserEmail) {
       setEditingBookingId(bookingId);
+    } else {
+      notUserBookingError();
     }
   };
 
   const handleCancelEdit = () => {
     setEditingBookingId(null);
+  };
+
+  const notUserBookingError = () => {
+    toast.error('Contact user to amend booking', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light"
+    });
   };
 
 
@@ -283,7 +322,7 @@ function LoungeBooking() {
 
       const isValid = await isValidEditedBooking(
         bookingData.Lounge,
-        bookingData.DateFilter.toDate(),
+        bookingData.Date.toDate(),
         newBookingData.BookingStart,
         newBookingData.BookingEnd,
         bookingId
@@ -412,8 +451,12 @@ function LoungeBooking() {
           Filter
         </button>
         <p>Bookings for the next 3 days at {selectedLounge || 'all lounges'}:</p>
+        {loading &&
+          <div>
+            <p>Loading Bookings...</p>
+            <CircularProgress disableShrink />
+          </div>}
         {bookings.length > 0 ? (
-
           <table>
             <thead>
               <tr>
@@ -480,12 +523,12 @@ function LoungeBooking() {
                         <button onClick={handleCancelEdit}><CancelIcon /></button>
                       </div>
                     ) : (
-                      <button onClick={() => handleEditBooking(booking.Id)}><EditIcon /></button>
+                      <button onClick={() => handleEditBooking(booking.Id, booking.User)}><EditIcon /></button>
                     )}
                   </td>
                   <td>
                     {booking.User === auth.currentUser.email ? <button onClick={() => handleDeleteBooking(booking.Id)}><DeleteIcon /></button>
-                      : <button><DeleteIcon /></button>}
+                      : <button onClick={() => notUserBookingError()}><DeleteIcon /></button>}
 
                   </td>
                 </tr>

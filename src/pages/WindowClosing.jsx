@@ -3,6 +3,7 @@ import { getDocs, collection, query, addDoc, doc, deleteDoc, getFirestore, order
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Checkbox } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function WindowClosing() {
   const [windowclosing, setWindowClosing] = useState([]);
@@ -11,8 +12,10 @@ function WindowClosing() {
     Completed: false,
     RoomNumber: ''
   });
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
+    setLoading(true);
     const windowClosingCollection = collection(firestore, "windowClosingRequests");
     const windowClosingQuery = query(windowClosingCollection, orderBy('RequestDateTime', "desc"));
     const querySnapshot = await getDocs(windowClosingQuery);
@@ -21,6 +24,7 @@ function WindowClosing() {
       fetchWindowClosingData.push({ Id: doc.id, ...doc.data() });
     });
     setWindowClosing(fetchWindowClosingData);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -51,7 +55,7 @@ function WindowClosing() {
       });
       return;
     } else if (!validateRoomNumber()) {
-      toast.error('Invalid room number.', {
+      toast.error('Invalid room number. Please use a valid Tulpar room Number eg. #16-63', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -117,6 +121,11 @@ function WindowClosing() {
   return (
     <>
       <div>
+        {loading &&
+          <div>
+            <p>Loading Requests...</p>
+            <CircularProgress disableShrink />
+          </div>}
         <form onSubmit={handleFormSubmit}>
           <input
             type="text"
