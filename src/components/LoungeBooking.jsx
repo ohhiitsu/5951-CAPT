@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, getDocs, where, getFirestore, addDoc, Timestamp, doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
+import { collection, query, getDocs, where, getFirestore, addDoc, Timestamp, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DatePicker from 'react-datepicker';
@@ -8,7 +8,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { auth } from "../config/firebase";
 
 function LoungeBooking() {
   const [locations, setLocations] = useState([]);
@@ -22,7 +21,6 @@ function LoungeBooking() {
   const [editingEndTime, setEditingEndTime] = useState('');
   const [selectedLounge, setSelectedLounge] = useState('');
   const [filterApplied, setFilterApplied] = useState(false);
-  const currentUserEmail = auth.currentUser ? auth.currentUser.email : '';
 
   const firestore = getFirestore();
 
@@ -52,9 +50,10 @@ function LoungeBooking() {
 
       let bookingsQuery = query(
         bookingsCollection,
-        where('DateFilter', '>=', currentDate),
-        where('DateFilter', '<=', threeDaysFromNow)
+        where('Date', '>=', currentDate),
+        where('Date', '<=', threeDaysFromNow)
       );
+
       if (filterApplied) {
         if (selectedLounge !== '') {
           bookingsQuery = query(bookingsQuery, where('Lounge', '==', selectedLounge));
@@ -88,94 +87,37 @@ function LoungeBooking() {
     setSelectedEndTime(event.target.value);
   };
 
-  const convertTimeToNumber = (timeString) => {
-    const [hours, minutes] = timeString.split(':');
-    return parseInt(hours) * 60 + parseInt(minutes);
-  };
-  
-  const convertNumberToTime = (minutes) => {
-    const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
-    const mins = (minutes % 60).toString().padStart(2, '0');
-    return `${hours}:${mins}`;
-  };
-  
-  const convertTimeStringToDate = (dateString, timeString) => {
-    const date = new Date(dateString);
-    const [hours, minutes] = timeString.split(':');
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
-  };
-  
-  const isValidBooking = async (lounge, selectedDate, selectedStartTime, selectedEndTime) => {
-    const selectedStartTimeNumber = convertTimeToNumber(selectedStartTime);
-    const selectedEndTimeNumber = convertTimeToNumber(selectedEndTime);
-  
-    // Check if end time is earlier or equal to start time
-    if (selectedEndTimeNumber <= selectedStartTimeNumber) {
-      return false;
-    }
-  
-    try {
-      const bookingsCollection = collection(firestore, 'LoungeBookings');
-      const selectedTimestamp = Timestamp.fromDate(selectedDate);
-
-      const bookingsQuery = query(
-        bookingsCollection,
-        where('Lounge', '==', lounge),
-        where('Date', '==', selectedTimestamp)
-      );
-      const bookingsSnapshot = await getDocs(bookingsQuery);
-      
-      // Check for clashes with existing bookings
-      const isValid = bookingsSnapshot.docs.every((doc) => {
-        const booking = doc.data();
-        console.log(booking);
-        const existingStartTime = booking.BookingStart;
-        const existingEndTime = booking.BookingEnd;
-  
-        // Check if the selected start and end times clash with existing bookings
-        return (
-          (selectedStartTimeNumber >= existingEndTime) ||
-          (selectedEndTimeNumber <= existingStartTime)
-        );
-      });
-  
-      return isValid;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  };
-  
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     if (!selectedLocation || !selectedStartTime || !selectedEndTime || !selectedDate) {
       return;
     }
-  
+
     try {
-      const isValid = await isValidBooking(selectedLocation, selectedDate, selectedStartTime, selectedEndTime);
-  
-      if (isValid) {
-        const bookingsCollection = collection(firestore, 'LoungeBookings');
-        const selectedDateTime = convertTimeStringToDate(selectedDate, selectedEndTime);
-  
+      const bookingsCollection = collection(firestore, 'LoungeBookings');
+      const bookingsQuery = query(
+        bookingsCollection,
+        where('Lounge', '==', selectedLocation),
+        where('BookingStart', '==', selectedStartTime),
+        where('BookingEnd', '==', selectedEndTime)
+      );
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+
+      if (bookingsSnapshot.empty) {
+
+        const selectedDateTime = Timestamp.fromDate(new Date(selectedDate));
+
         const bookingData = {
           Lounge: selectedLocation,
-          Date: Timestamp.fromDate(selectedDate),
-          DateFilter: Timestamp.fromDate(selectedDateTime),
-          BookingStart: convertTimeToNumber(selectedStartTime),
-          BookingEnd: convertTimeToNumber(selectedEndTime),
-          User: auth.currentUser.email
+          Date: selectedDateTime,
+          BookingStart: selectedStartTime,
+          BookingEnd: selectedEndTime,
         };
-  
+
         // Add the new booking to the "LoungeBookings" collection
         await addDoc(bookingsCollection, bookingData);
-  
+
         toast.success('Booking confirmed!', {
           position: "top-right",
           autoClose: 3000,
@@ -186,16 +128,15 @@ function LoungeBooking() {
           progress: undefined,
           theme: "light"
         });
-  
+
         fetchBookings();
       } else {
-        toast.error('Invalid booking. Please check the timing or select a different time slot.', {
+        toast.error('Booking clashes with existing booking', {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
+          pauseOnHover: false, draggable: true,
           progress: undefined,
           theme: "light"
         });
@@ -204,10 +145,10 @@ function LoungeBooking() {
       console.log(error);
     }
   };
-  
 
   const handleDeleteBooking = async (bookingId) => {
     try {
+      console.log(bookingId)
       const bookingRef = doc(firestore, 'LoungeBookings', bookingId);
       await deleteDoc(bookingRef);
       toast.success('Booking deleted successfully!', {
@@ -227,99 +168,33 @@ function LoungeBooking() {
   };
 
   const handleEditBooking = (bookingId) => {
-    if (auth.currentUser && auth.currentUser.email === currentUserEmail) {
-      setEditingBookingId(bookingId);
-    }
+    setEditingBookingId(bookingId);
   };
 
   const handleCancelEdit = () => {
     setEditingBookingId(null);
   };
 
-
-  const isValidEditedBooking = async (lounge, selectedDate, selectedStartTime, selectedEndTime, id) => {
-    // Check if end time is earlier or equal to start time
-    if (selectedEndTime <= selectedStartTime) {
-      return false;
-    }
-
-    try {
-      const bookingsCollection = collection(firestore, 'LoungeBookings');
-      const selectedDateTime = Timestamp.fromDate(selectedDate);
-
-      const bookingsQuery = query(
-        bookingsCollection,
-        where('Lounge', '==', lounge),
-        where('Date', '==', selectedDateTime),
-        where('__name__', '!=', id)
-      );
-      const bookingsSnapshot = await getDocs(bookingsQuery);
-
-      // Check for clashes with existing bookings
-      const isValid = bookingsSnapshot.docs.every((doc) => {
-        const booking = doc.data();
-        const existingStartTime = booking.BookingStart;
-        const existingEndTime = booking.BookingEnd;
-
-        // Check if the selected start and end times clash with existing bookings
-        return (
-          (selectedStartTime >= existingEndTime) ||
-          (selectedEndTime <= existingStartTime)
-        );
-      });
-
-      return isValid;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  };
-
   const handleSaveEdit = async (bookingId, newBookingData) => {
     try {
       const bookingRef = doc(firestore, 'LoungeBookings', bookingId);
-      const bookingDoc = await getDoc(bookingRef);
-      const bookingData = bookingDoc.data();
-
-      const isValid = await isValidEditedBooking(
-        bookingData.Lounge,
-        bookingData.DateFilter.toDate(),
-        newBookingData.BookingStart,
-        newBookingData.BookingEnd,
-        bookingId
-      );
-
-      if (isValid) {
-        await updateDoc(bookingRef, newBookingData);
-        toast.success('Booking updated successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: 'light',
-        });
-        setEditingBookingId(null);
-        fetchBookings();
-      } else {
-        toast.error('Invalid booking. Please check the timing or select a different time slot.', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: 'light',
-        });
-      }
+      await updateDoc(bookingRef, newBookingData);
+      toast.success('Booking updated successfully!', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+      setEditingBookingId(null);
+      fetchBookings();
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const handleLoungeChange = (event) => {
     setSelectedLounge(event.target.value);
@@ -330,12 +205,6 @@ function LoungeBooking() {
     fetchBookings();
   };
 
-  const renderBookingTime = (bookingTime) => {
-    const hours = Math.floor(bookingTime / 60).toString().padStart(2, '0'); // Calculate hours from the booking time
-    const minutes = (bookingTime % 60).toString().padStart(2, '0'); // Calculate minutes from the booking time
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime; // Return the formatted time
-  };
 
   return (
     <>
@@ -418,7 +287,6 @@ function LoungeBooking() {
             <thead>
               <tr>
                 <th>Lounge</th>
-                <th>User</th>
                 <th>Date</th>
                 <th>Start Time</th>
                 <th>End Time</th>
@@ -430,12 +298,11 @@ function LoungeBooking() {
               {bookings.map((booking) => (
                 <tr key={booking.Id}>
                   <td>{booking.Lounge}</td>
-                  <td>{booking.User.split("@")[0]}</td>
                   <td>{booking.Date.toDate().toLocaleDateString()}</td>
-                  <td>{renderBookingTime(booking.BookingStart)}</td>
-                  <td>{renderBookingTime(booking.BookingEnd)}</td>
+                  <td>{booking.BookingStart}</td>
+                  <td>{booking.BookingEnd}</td>
                   <td>
-                    {editingBookingId === booking.Id && booking.User === auth.currentUser.email ? (
+                    {editingBookingId === booking.Id ? (
                       <div>
                         <select
                           value={editingStartTime}
@@ -470,8 +337,8 @@ function LoungeBooking() {
                         <button
                           onClick={() =>
                             handleSaveEdit(booking.Id, {
-                              BookingStart: convertTimeToNumber(editingStartTime),
-                              BookingEnd: convertTimeToNumber(editingEndTime),
+                              BookingStart: editingStartTime,
+                              BookingEnd: editingEndTime,
                             })
                           }
                         >
@@ -484,9 +351,7 @@ function LoungeBooking() {
                     )}
                   </td>
                   <td>
-                    {booking.User === auth.currentUser.email ? <button onClick={() => handleDeleteBooking(booking.Id)}><DeleteIcon /></button>
-                      : <button><DeleteIcon /></button>}
-
+                    <button onClick={() => handleDeleteBooking(booking.Id)}><DeleteIcon /></button>
                   </td>
                 </tr>
               ))}

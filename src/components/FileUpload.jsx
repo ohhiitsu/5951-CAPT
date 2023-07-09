@@ -14,8 +14,6 @@ const FileUpload = () => {
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState(0);
     const [price, setPrice] = useState(0.0);
-
-
     const [openUpload, setUploadOpen] = useState(false);
     const closeUploadModal = () => setUploadOpen(false);
     const openUploadModal = () => setUploadOpen(true);
@@ -53,8 +51,18 @@ const FileUpload = () => {
     };
 
     const handleUpload = () => {
-        if (file == "") {
+        if (file === "") {
             alert("Please add the file");
+        }
+
+        if (isNaN(quantity) || quantity <= 0) {
+            alert("Please enter a valid quantity");
+            return;
+        }
+
+        if (isNaN(price) || !/^\d+(\.\d{1,2})?$/.test(price)) {
+            alert("Please enter a valid price");
+            return;
         }
 
         const storageRef = ref(storage, `images/${file.name}`);
@@ -106,7 +114,7 @@ const FileUpload = () => {
 
     const handleQuantityChange = (value) => {
         setSelectedProduct((prevProduct) => {
-            const product = products.find((p) => p.Id === prevProduct.Id);
+            const product = products.find((p) => p.id === prevProduct.id);
             const newQuantity = prevProduct.quantity + value;
             const updatedQuantity = Math.max(1, Math.min(newQuantity, product.quantity));
             return {
@@ -123,7 +131,7 @@ const FileUpload = () => {
             const productRef = doc(db, "eMarketDatabase", selectedProduct.id);
             console.log(productRef);
             await updateDoc(productRef, {
-                Quantity: selectedProduct.Quantity - selectedProduct.quantity 
+                Quantity: selectedProduct.Quantity - selectedProduct.quantity
             });
             closeBuyNowModal();
         } catch (error) {
@@ -135,7 +143,7 @@ const FileUpload = () => {
     return (
         <div>
             <div className="black-market header">
-            <img src= "https://firebasestorage.googleapis.com/v0/b/orbital2023-3e7ce.appspot.com/o/blackmarket.jpg?alt=media&token=e265b5e9-743c-435d-9463-b2951c2bb752" alt="Product" />
+                <img src="https://firebasestorage.googleapis.com/v0/b/orbital2023-3e7ce.appspot.com/o/blackmarket.jpg?alt=media&token=e265b5e9-743c-435d-9463-b2951c2bb752" alt="Product" />
             </div>
             {loading && <p>Loading Products...</p>}
             {products.length > 0 ? (
@@ -152,7 +160,9 @@ const FileUpload = () => {
                                         <p className="product-price">${product.price.toFixed(2)}</p>
                                         <p className="product-quantity">Quantity: {product.quantity}</p>
                                     </div>
-                                    <button onClick={() => handleBuyNow(product)}>Buy Now</button>
+                                    {product.quantity > 0 && (
+                                        <button onClick={() => handleBuyNow(product)}>Buy Now</button>
+                                    )}
                                 </div>
                             );
                         })}
@@ -164,8 +174,20 @@ const FileUpload = () => {
             <Popup open={openUpload} onClose={closeUploadModal}>
                 <input type="file" accept="image/*" onChange={handleChange} />
                 <input type="text" placeholder="Name" onChange={(e) => setName(e.target.value)} />
-                <input type="number" placeholder="Quantity" onChange={(e) => setQuantity(parseInt(e.target.value, 10))} />
-                <input type="number" placeholder="Price ($)" step="0.10" onChange={(e) => setPrice(parseFloat(e.target.value))} />
+                <input type="number" placeholder="Quantity" value={quantity} onChange={(e) => {
+                    const newQuantity = parseInt(e.target.value, 10);
+                    if (newQuantity >= 0) {
+                        setQuantity(newQuantity);
+                    }
+                }} />
+                <input type="number" placeholder="Price ($)" step="0.10" value={price} onChange={(e) => {
+                    const newPrice = parseFloat(e.target.value);
+                    if (!isNaN(newPrice) && newPrice >= 0) {
+                        const formattedPrice = newPrice.toFixed(2);
+                        setPrice(parseFloat(formattedPrice));
+                    }
+                }} />
+
                 <button onClick={handleUpload}>Save</button>
                 {uploaded && (
                     <p className="success-msg">New Product was uploaded successfully</p>

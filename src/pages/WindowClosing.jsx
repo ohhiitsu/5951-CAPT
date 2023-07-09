@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getDocs, collection, query, addDoc, doc, deleteDoc, getFirestore } from 'firebase/firestore';
+import { getDocs, collection, query, addDoc, doc, deleteDoc, getFirestore, orderBy } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Checkbox } from "@mui/material";
@@ -14,7 +14,7 @@ function WindowClosing() {
 
   const fetchData = async () => {
     const windowClosingCollection = collection(firestore, "windowClosingRequests");
-    const windowClosingQuery = query(windowClosingCollection);
+    const windowClosingQuery = query(windowClosingCollection, orderBy('RequestDateTime', "desc"));
     const querySnapshot = await getDocs(windowClosingQuery);
     const fetchWindowClosingData = [];
     querySnapshot.forEach((doc) => {
@@ -49,6 +49,7 @@ function WindowClosing() {
         progress: undefined,
         theme: "light"
       });
+      return;
     } else if (!validateRoomNumber()) {
       toast.error('Invalid room number.', {
         position: "top-right",
@@ -82,7 +83,8 @@ function WindowClosing() {
       const windowClosingCollection = collection(firestore, "windowClosingRequests");
       const newWindowClosingRequest = {
         Completed: false,
-        RoomNumber: inputData.RoomNumber
+        RoomNumber: inputData.RoomNumber,
+        RequestDateTime: new Date()
       };
       await addDoc(windowClosingCollection, newWindowClosingRequest);
       toast.success('Window Closing Request Submitted!', {
