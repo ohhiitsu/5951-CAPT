@@ -20,7 +20,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
             <Route path="/windowclosing" element={<WindowClosing />}></Route>
             <Route path="/eblackmarket" element={<EBlackMarket />}></Route>
-            <Route path="//eblackmarketadmin" element={<EBlackMarketAdmin/>}></Route>
+            <Route path="/eblackmarketadmin" element={<EBlackMarketAdmin/>}></Route>
             <Route path="/loungebooking" element={<LoungeBooking />}></Route>
           </Route>
         </Routes>
