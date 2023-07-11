@@ -1,7 +1,9 @@
 import React from "react";
 import { Link, useMatch, useResolvedPath } from "react-router-dom";
+import { auth } from "../config/firebase";
 
 function Navbar() {
+
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
@@ -10,7 +12,7 @@ function Navbar() {
       <ul>
         <CustomLink to="/windowclosing">Window Closing</CustomLink>
         <CustomLink to="/eblackmarket">E-Black Market</CustomLink>
-        <CustomLink to="/eblackmarketadmin">E-Black Market Admin</CustomLink>
+        {<CustomLink to="/eblackmarketadmin">E-Black Market Admin</CustomLink>}
         <CustomLink to="/loungebooking">Lounge Booking</CustomLink>
         <CustomLink to="/login">Log In</CustomLink>
       </ul>
