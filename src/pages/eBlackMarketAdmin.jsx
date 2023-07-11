@@ -7,6 +7,8 @@ import "reactjs-popup/dist/index.css";
 import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const EBlackMarketAdmin = () => {
     const [file, setFile] = useState("");
@@ -103,13 +105,23 @@ const EBlackMarketAdmin = () => {
             if (product.id === productId) {
                 return {
                     ...product,
-                    price: Number(parseFloat(newPrice).toFixed(2)), // Updated line
+                    price: Number(parseFloat(newPrice).toFixed(2)),
                 };
             }
             return product;
         });
 
         setProducts(updatedProducts);
+        toast.success('Price updated!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "light"
+        });
     };
 
 
@@ -125,6 +137,16 @@ const EBlackMarketAdmin = () => {
                 Quantity: Number(newQuantity),
             });
             loadAllProducts();
+            toast.success('Quantity updated!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light"
+            });
         } catch (error) {
             console.error(error);
         }
@@ -136,6 +158,16 @@ const EBlackMarketAdmin = () => {
             const productRef = doc(db, "eMarketDatabase", productId);
             await deleteDoc(productRef);
             loadAllProducts();
+            toast.success('Product deleted!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light"
+            });
         } catch (error) {
             console.error(error);
         }
@@ -238,6 +270,7 @@ const EBlackMarketAdmin = () => {
                     <CircularProgress disableShrink />
                 </div>
             )}
+            <ToastContainer />
         </div>
     );
 };

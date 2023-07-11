@@ -111,11 +111,21 @@ function WindowClosing() {
     }
   };
 
-  const handleCheckboxClick = (id) => {
+  const handleCheckboxClick = (id, roomNumber) => {
     const windowClosingCollection = collection(firestore, "windowClosingRequests");
     const requestRef = doc(windowClosingCollection, id);
     deleteDoc(requestRef);
     fetchData();
+    toast.success('Thank you for closing the window for ' + roomNumber, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light"
+    });
   };
 
   return (
@@ -154,7 +164,7 @@ function WindowClosing() {
                 <tr key={wc.Id}>
                   <td>{wc.RoomNumber}</td>
                   <td>
-                    <Checkbox checked={wc.Completed} onChange={() => handleCheckboxClick(wc.Id)} />
+                    <Checkbox checked={wc.Completed} onChange={() => handleCheckboxClick(wc.Id, wc.RoomNumber)} />
                   </td>
                 </tr>
               ))}

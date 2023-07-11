@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { storage, db } from "../config/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, collection, setDoc, getDocs, updateDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import { doc, collection, getDocs, updateDoc } from "firebase/firestore";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const FileUpload = () => {
@@ -13,8 +14,6 @@ const FileUpload = () => {
     useEffect(() => {
         loadAllProducts();
     }, []);
-
-
 
     const loadAllProducts = async () => {
         setLoading(true);
@@ -33,8 +32,6 @@ const FileUpload = () => {
         setProducts(currProducts);
         setLoading(false);
     };
-
-
 
     const handleBuyNow = (product) => {
         openBuyNowModal(product);
@@ -65,12 +62,22 @@ const FileUpload = () => {
         });
     };
 
-
     const handlePaid = async () => {
         try {
             const productRef = doc(db, "eMarketDatabase", selectedProduct.id);
+            const newQuantity = isNaN(selectedProduct.Quantity - selectedProduct.quantity) ? 0 : selectedProduct.Quantity - selectedProduct.quantity;
             await updateDoc(productRef, {
-                Quantity: selectedProduct.Quantity - selectedProduct.quantity
+                Quantity: newQuantity
+            });
+            toast.success('Thank you for your purchase!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light"
             });
             closeBuyNowModal();
         } catch (error) {
@@ -130,7 +137,7 @@ const FileUpload = () => {
                     <button onClick={handlePaid}>I have paid</button>
                 </div>
             </Popup>
-
+            <ToastContainer />
         </div>
     );
 };

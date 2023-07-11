@@ -105,27 +105,27 @@ function Home() {
   const formattedDate = currentDate.toLocaleDateString(undefined, options);
 
   return (
-    <div>
+    <div className="home-container">
       {currentUser && (
-        <div>Welcome back, {currentUser.email}</div>
+        <div className="welcome-message">Welcome back, {currentUser.email}</div>
       )}
       <hr />
-      <div>{formattedDate}</div>
+      <div className="date">{formattedDate}</div>
       <hr />
       {currentUser && (
-        <div>
+        <div className="booking-section">
           <h3>Your Upcoming Bookings:</h3>
           {loadingUserBooking ? (
-            <div>
+            <div className="loading">
               <p>Loading Bookings...</p>
               <CircularProgress disableShrink />
             </div>
           ) : userBookings.length === 0 ? (
-            <div>
-              <p>No bookings yet,  <Link to="loungebooking">Book Now</Link></p>
+            <div className="no-bookings">
+              <p>No bookings yet, <Link to="/loungebooking">Book Now</Link></p>
             </div>
           ) : (
-            <table>
+            <table className="bookings-table">
               <thead>
                 <tr>
                   <th>Lounge</th>
@@ -148,19 +148,19 @@ function Home() {
           )}
         </div>
       )}
-      <div>
+      <div className="booking-section">
         <h3>Lounge Bookings in the next 24H:</h3>
         {loadingBookings ? (
-          <div>
+          <div className="loading">
             <p>Loading Bookings...</p>
             <CircularProgress disableShrink />
           </div>
         ) : bookings.length === 0 ? (
-          <div>
-            <p>No bookings yet,  <Link to="loungebooking">Book Now</Link></p>
+          <div className="no-bookings">
+            <p>No bookings yet, <Link to="/loungebooking">Book Now</Link></p>
           </div>
         ) : (
-          <table>
+          <table className="bookings-table">
             <thead>
               <tr>
                 <th>Lounge</th>
@@ -182,17 +182,19 @@ function Home() {
           </table>
         )}
       </div>
-      <div>
+      <div className="window-closing-section">
         <h3>Window Closing Requests:</h3>
         {loading ? (
-          <div>
+          <div className="loading">
             <p>Loading requests...</p>
             <CircularProgress disableShrink />
           </div>
         ) : (
-          <ul>
+          <ul className="window-closing-list">
             {windowClosing.map((request) => (
-              <li key={request.Id}> <Link to="windowclosing">{request.RoomNumber}</Link></li>
+              <li key={request.Id}>
+                <Link to="/windowclosing">{request.RoomNumber}</Link>
+              </li>
             ))}
           </ul>
         )}

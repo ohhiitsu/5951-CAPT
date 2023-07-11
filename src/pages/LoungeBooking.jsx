@@ -367,6 +367,16 @@ function LoungeBooking() {
   const handleFilter = () => {
     setFilterApplied(true);
     fetchBookings();
+    toast.success('Filter Applied!', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "light"
+    });
   };
 
   const renderBookingTime = (bookingTime) => {
@@ -378,64 +388,66 @@ function LoungeBooking() {
 
   return (
     <>
-      <div>
+      <div className="booking-container">
         <h1>Lounge Booking Reservation</h1>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="location">Location:</label>
-            <select id="location" value={selectedLocation} onChange={handleLocationChange}>
-              <option value="">Select a location</option>
-              {locations.map((location) => (
-                <option key={location.Id} value={location.Name}>
-                  {location.Name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="date">Date:</label>
-            <DatePicker
-              id="date"
-              selected={selectedDate}
-              onChange={handleDateChange}
-              dateFormat="MM/dd/yyyy"
-              placeholderText="Select a date"
-            />
-          </div>
-          <div>
-            <label htmlFor="startTime">Start Time:</label>
-            <select id="startTime" value={selectedStartTime} onChange={handleStartTimeChange}>
-              <option value="">Select a start time</option>
-              {Array.from({ length: 24 * 4 }).map((_, index) => {
-                const time = `${Math.floor(index / 4)
-                  .toString()
-                  .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
-                return (
-                  <option key={index} value={time}>
-                    {time}
+        <div>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="location">Location:</label>
+              <select id="location" value={selectedLocation} onChange={handleLocationChange}>
+                <option value="">Select a location</option>
+                {locations.map((location) => (
+                  <option key={location.Id} value={location.Name}>
+                    {location.Name}
                   </option>
-                );
-              })}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="endTime">End Time:</label>
-            <select id="endTime" value={selectedEndTime} onChange={handleEndTimeChange}>
-              <option value="">Select an end time</option>
-              {Array.from({ length: 24 * 4 }).map((_, index) => {
-                const time = `${Math.floor(index / 4)
-                  .toString()
-                  .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
-                return (
-                  <option key={index} value={time}>
-                    {time}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <button type="submit">Book Now</button>
-        </form>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="date">Date:</label>
+              <DatePicker
+                id="date"
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="MM/dd/yyyy"
+                placeholderText="Select a date"
+              />
+            </div>
+            <div>
+              <label htmlFor="startTime">Start Time:</label>
+              <select id="startTime" value={selectedStartTime} onChange={handleStartTimeChange}>
+                <option value="">Select a start time</option>
+                {Array.from({ length: 24 * 4 }).map((_, index) => {
+                  const time = `${Math.floor(index / 4)
+                    .toString()
+                    .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
+                  return (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="endTime">End Time:</label>
+              <select id="endTime" value={selectedEndTime} onChange={handleEndTimeChange}>
+                <option value="">Select an end time</option>
+                {Array.from({ length: 24 * 4 }).map((_, index) => {
+                  const time = `${Math.floor(index / 4)
+                    .toString()
+                    .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
+                  return (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            <button type="submit">Book Now</button>
+          </form>
+        </div>
         <div>
           <label htmlFor="lounge">Filter by Lounge:</label>
           <select id="lounge" value={selectedLounge} onChange={handleLoungeChange}>
@@ -450,98 +462,108 @@ function LoungeBooking() {
         <button type="button" onClick={handleFilter}>
           Filter
         </button>
-        <p>Bookings for the next 3 days at {selectedLounge || 'all lounges'}:</p>
-        {loading &&
-          <div>
-            <p>Loading Bookings...</p>
-            <CircularProgress disableShrink />
-          </div>}
-        {bookings.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Lounge</th>
-                <th>User</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Edit</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking.Id}>
-                  <td>{booking.Lounge}</td>
-                  <td>{booking.User.split("@")[0]}</td>
-                  <td>{booking.Date.toDate().toLocaleDateString()}</td>
-                  <td>{renderBookingTime(booking.BookingStart)}</td>
-                  <td>{renderBookingTime(booking.BookingEnd)}</td>
-                  <td>
-                    {editingBookingId === booking.Id && booking.User === auth.currentUser.email ? (
-                      <div>
-                        <select
-                          value={editingStartTime}
-                          onChange={(e) => setEditingStartTime(e.target.value)}
-                        >
-                          {Array.from({ length: 24 * 4 }).map((_, index) => {
-                            const time = `${Math.floor(index / 4)
-                              .toString()
-                              .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
-                            return (
-                              <option key={index} value={time}>
-                                {time}
-                              </option>
-                            );
-                          })}
-                        </select>
-                        <select
-                          value={editingEndTime}
-                          onChange={(e) => setEditingEndTime(e.target.value)}
-                        >
-                          {Array.from({ length: 24 * 4 }).map((_, index) => {
-                            const time = `${Math.floor(index / 4)
-                              .toString()
-                              .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
-                            return (
-                              <option key={index} value={time}>
-                                {time}
-                              </option>
-                            );
-                          })}
-                        </select>
-                        <button
-                          onClick={() =>
-                            handleSaveEdit(booking.Id, {
-                              BookingStart: convertTimeToNumber(editingStartTime),
-                              BookingEnd: convertTimeToNumber(editingEndTime),
-                            })
-                          }
-                        >
-                          <CheckCircleIcon />
-                        </button>
-                        <button onClick={handleCancelEdit}><CancelIcon /></button>
-                      </div>
-                    ) : (
-                      <button onClick={() => handleEditBooking(booking.Id, booking.User)}><EditIcon /></button>
-                    )}
-                  </td>
-                  <td>
-                    {booking.User === auth.currentUser.email ? <button onClick={() => handleDeleteBooking(booking.Id)}><DeleteIcon /></button>
-                      : <button onClick={() => notUserBookingError()}><DeleteIcon /></button>}
-
-                  </td>
+        <div>
+          <p>Bookings for the next 3 days at {selectedLounge || 'all lounges'}:</p>
+          {loading && (
+            <div className="loading">
+              <p>Loading Bookings...</p>
+              <CircularProgress disableShrink />
+            </div>
+          )}
+          {bookings.length > 0 ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Lounge</th>
+                  <th>User</th>
+                  <th>Date</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No bookings available.</p>
-        )}
+              </thead>
+              <tbody>
+                {bookings.map((booking) => (
+                  <tr key={booking.Id}>
+                    <td>{booking.Lounge}</td>
+                    <td>{booking.User.split("@")[0]}</td>
+                    <td>{booking.Date.toDate().toLocaleDateString()}</td>
+                    <td>{renderBookingTime(booking.BookingStart)}</td>
+                    <td>{renderBookingTime(booking.BookingEnd)}</td>
+                    <td>
+                      {editingBookingId === booking.Id && booking.User === auth.currentUser.email ? (
+                        <div>
+                          <select
+                            value={editingStartTime}
+                            onChange={(e) => setEditingStartTime(e.target.value)}
+                          >
+                            {Array.from({ length: 24 * 4 }).map((_, index) => {
+                              const time = `${Math.floor(index / 4)
+                                .toString()
+                                .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
+                              return (
+                                <option key={index} value={time}>
+                                  {time}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          <select
+                            value={editingEndTime}
+                            onChange={(e) => setEditingEndTime(e.target.value)}
+                          >
+                            {Array.from({ length: 24 * 4 }).map((_, index) => {
+                              const time = `${Math.floor(index / 4)
+                                .toString()
+                                .padStart(2, '0')}:${((index % 4) * 15).toString().padEnd(2, '0')}`;
+                              return (
+                                <option key={index} value={time}>
+                                  {time}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          <button
+                            onClick={() =>
+                              handleSaveEdit(booking.Id, {
+                                BookingStart: convertTimeToNumber(editingStartTime),
+                                BookingEnd: convertTimeToNumber(editingEndTime),
+                              })
+                            }
+                          >
+                            <CheckCircleIcon />
+                          </button>
+                          <button onClick={handleCancelEdit}><CancelIcon /></button>
+                        </div>
+                      ) : (
+                        <button onClick={() => handleEditBooking(booking.Id, booking.User)}><EditIcon /></button>
+                      )}
+                    </td>
+                    <td>
+                      {booking.User === auth.currentUser.email ? (
+                        <button onClick={() => handleDeleteBooking(booking.Id)}>
+                          <DeleteIcon />
+                        </button>
+                      ) : (
+                        <button onClick={() => notUserBookingError()}>
+                          <DeleteIcon />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="no-bookings">
+              No bookings available.
+            </p>
+          )}
+        </div>
         <ToastContainer />
       </div>
     </>
   );
-}
-
+          }
 export default LoungeBooking;
