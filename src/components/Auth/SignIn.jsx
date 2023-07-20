@@ -21,9 +21,19 @@ const SignIn = (e) => {
           progress: undefined,
           theme: "light",
         });
-        console.log(userCredential);
+        // console.log(userCredential);
       })
       .catch((error) => {
+        toast.error("Please check your Username/ Password", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         console.log(error);
       });
   };
