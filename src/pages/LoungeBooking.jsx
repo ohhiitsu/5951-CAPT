@@ -19,8 +19,8 @@ function LoungeBooking() {
   const [selectedEndTime, setSelectedEndTime] = useState('');
   const [bookings, setBookings] = useState([]);
   const [editingBookingId, setEditingBookingId] = useState(null);
-  const [editingStartTime, setEditingStartTime] = useState('');
-  const [editingEndTime, setEditingEndTime] = useState('');
+  const [editingStartTime, setEditingStartTime] = useState('00:00');
+  const [editingEndTime, setEditingEndTime] = useState('00:00');
   const [selectedLounge, setSelectedLounge] = useState('');
   const [filterApplied, setFilterApplied] = useState(false);
   const currentUserEmail = auth.currentUser ? auth.currentUser.email : '';
