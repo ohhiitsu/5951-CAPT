@@ -104,6 +104,7 @@ const EBlackMarketAdmin = () => {
         loadAllProducts();
       }
     );
+    loadAllProducts();
   };
 
   const handleEditPrice = (productId, newPrice) => {
