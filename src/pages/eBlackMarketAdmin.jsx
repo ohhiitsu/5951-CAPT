@@ -16,6 +16,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@mui/material";
 
 const EBlackMarketAdmin = () => {
   const [file, setFile] = useState("");
@@ -122,7 +123,7 @@ const EBlackMarketAdmin = () => {
     });
 
     setProducts(updatedProducts);
-    toast.success('Price updated!', { ...toastSettings });
+    toast.success("Price updated!", { ...toastSettings });
   };
 
   const handleEditQuantity = async (productId, newQuantity) => {
@@ -135,7 +136,7 @@ const EBlackMarketAdmin = () => {
       const productRef = doc(db, "eMarketDatabase", productId);
       await updateDoc(productRef, { Quantity: Number(newQuantity) });
       loadAllProducts();
-      toast.success('Quantity updated!', { ...toastSettings });
+      toast.success("Quantity updated!", { ...toastSettings });
     } catch (error) {
       console.error(error);
     }
@@ -146,7 +147,7 @@ const EBlackMarketAdmin = () => {
       const productRef = doc(db, "eMarketDatabase", productId);
       await deleteDoc(productRef);
       loadAllProducts();
-      toast.success('Product deleted!', { ...toastSettings });
+      toast.success("Product deleted!", { ...toastSettings });
     } catch (error) {
       console.error(error);
     }
@@ -166,7 +167,9 @@ const EBlackMarketAdmin = () => {
   if (adminEmails.includes(currentUserEmail)) {
     return (
       <div>
-        <button onClick={openUploadModal}>Upload a new product</button>
+        <Button variant="outlined" onClick={openUploadModal}>
+          Upload a new product
+        </Button>
         <Popup open={openUpload} onClose={closeUploadModal}>
           <div>
             <label>
