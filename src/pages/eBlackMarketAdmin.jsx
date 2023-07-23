@@ -112,18 +112,8 @@ const EBlackMarketAdmin = () => {
         });
 
         setProducts(updatedProducts);
-        toast.success('Price updated!', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: "light"
-        });
+        toast.success('Price updated!', { ...toastSettings });
     };
-
 
     const handleEditQuantity = async (productId, newQuantity) => {
         if (!Number.isInteger(Number(newQuantity)) || newQuantity <= 0) {
@@ -133,45 +123,36 @@ const EBlackMarketAdmin = () => {
 
         try {
             const productRef = doc(db, "eMarketDatabase", productId);
-            await updateDoc(productRef, {
-                Quantity: Number(newQuantity),
-            });
+            await updateDoc(productRef, { Quantity: Number(newQuantity) });
             loadAllProducts();
-            toast.success('Quantity updated!', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light"
-            });
+            toast.success('Quantity updated!', { ...toastSettings });
         } catch (error) {
             console.error(error);
         }
     };
-
 
     const handleDeleteProduct = async (productId) => {
         try {
             const productRef = doc(db, "eMarketDatabase", productId);
             await deleteDoc(productRef);
             loadAllProducts();
-            toast.success('Product deleted!', {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true,
-                progress: undefined,
-                theme: "light"
-            });
+            toast.success('Product deleted!', { ...toastSettings });
         } catch (error) {
             console.error(error);
         }
     };
+
+    const toastSettings = {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    };
+
 
     return (
         <div>

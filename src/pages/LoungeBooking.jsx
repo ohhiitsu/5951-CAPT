@@ -31,6 +31,7 @@ function LoungeBooking() {
     fetchLocations();
     fetchBookings();
   }, []);
+  
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -395,7 +396,7 @@ function LoungeBooking() {
             <div>
               <label htmlFor="location">Location:</label>
               <select id="location" value={selectedLocation} onChange={handleLocationChange}>
-                <option value="">Select a location</option>
+                <option key="all-lounges" value="">Select a location</option>
                 {locations.map((location) => (
                   <option key={location.Id} value={location.Name}>
                     {location.Name}
