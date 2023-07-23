@@ -29,6 +29,8 @@ const EBlackMarketAdmin = () => {
   const [openUpload, setUploadOpen] = useState(false);
   const closeUploadModal = () => setUploadOpen(false);
   const openUploadModal = () => setUploadOpen(true);
+  const currentUserEmail = auth.currentUser ? auth.currentUser.email : "";
+  const adminEmails = ["admin@u.nus.edu"];
 
   useEffect(() => {
     loadAllProducts();
@@ -161,126 +163,126 @@ const EBlackMarketAdmin = () => {
         theme: "light",
     };
 
-
-    return (
-      <div>
-        <button onClick={openUploadModal}>Upload a new product</button>
-        <Popup open={openUpload} onClose={closeUploadModal}>
-          <div>
-            <label>
-              Product Image:
-              <input type="file" accept="image/*" onChange={handleChange} />
-            </label>
-          </div>
-          <div>
-            <label>
-              Product Name:
-              <input
-                type="text"
-                placeholder="Name"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Product Quantity:
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={quantity}
-                onChange={(e) => {
-                  const newQuantity = parseInt(e.target.value, 10);
-                  if (newQuantity >= 0) {
-                    setQuantity(newQuantity);
-                  }
-                }}
-              />
-            </label>
-          </div>
-          <div>
-            <label>
-              Product Price ($):
-              <input
-                type="number"
-                placeholder="Price ($)"
-                step="0.10"
-                value={price}
-                onChange={(e) => {
-                  const newPrice = parseFloat(e.target.value);
-                  if (!isNaN(newPrice) && newPrice >= 0) {
-                    const formattedPrice = newPrice.toFixed(2);
-                    setPrice(parseFloat(formattedPrice));
-                  }
-                }}
-              />
-            </label>
-          </div>
-          <div>
-            <button onClick={handleUpload}>Save</button>
-          </div>
-          {uploaded && (
-            <p className="success-msg">New Product was uploaded successfully</p>
-          )}
-        </Popup>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Edit Price</th>
-              <th>Quantity</th>
-              <th>Edit Quantity</th>
-              <th>Delete Product</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.name}</td>
-                <td>${product.price.toFixed(2)}</td>
-                <td>
-                  <button
-                    onClick={() =>
-                      handleEditPrice(product.id, prompt("Enter new price:"))
+    if (adminEmails.includes(currentUserEmail)) {
+      return (
+        <div>
+          <button onClick={openUploadModal}>Upload a new product</button>
+          <Popup open={openUpload} onClose={closeUploadModal}>
+            <div>
+              <label>
+                Product Image:
+                <input type="file" accept="image/*" onChange={handleChange} />
+              </label>
+            </div>
+            <div>
+              <label>
+                Product Name:
+                <input
+                  type="text"
+                  placeholder="Name"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Product Quantity:
+                <input
+                  type="number"
+                  placeholder="Quantity"
+                  value={quantity}
+                  onChange={(e) => {
+                    const newQuantity = parseInt(e.target.value, 10);
+                    if (newQuantity >= 0) {
+                      setQuantity(newQuantity);
                     }
-                  >
-                    <EditIcon />
-                  </button>{" "}
-                </td>
-                <td>{product.quantity}</td>
-                <td>
-                  {" "}
-                  <button
-                    onClick={() =>
-                      handleEditQuantity(
-                        product.id,
-                        prompt("Enter new quantity:")
-                      )
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Product Price ($):
+                <input
+                  type="number"
+                  placeholder="Price ($)"
+                  step="0.10"
+                  value={price}
+                  onChange={(e) => {
+                    const newPrice = parseFloat(e.target.value);
+                    if (!isNaN(newPrice) && newPrice >= 0) {
+                      const formattedPrice = newPrice.toFixed(2);
+                      setPrice(parseFloat(formattedPrice));
                     }
-                  >
-                    <EditIcon />
-                  </button>
-                </td>
-                <td>
-                  <button onClick={() => handleDeleteProduct(product.id)}>
-                    <DeleteIcon />
-                  </button>
-                </td>
+                  }}
+                />
+              </label>
+            </div>
+            <div>
+              <button onClick={handleUpload}>Save</button>
+            </div>
+            {uploaded && (
+              <p className="success-msg">New Product was uploaded successfully</p>
+            )}
+          </Popup>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Edit Price</th>
+                <th>Quantity</th>
+                <th>Edit Quantity</th>
+                <th>Delete Product</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {loading && (
-          <div>
-            <p>Loading Products...</p>
-            <CircularProgress disableShrink />
-          </div>
-        )}
-        <ToastContainer />
-      </div>
-    );
-  } else {
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.name}</td>
+                  <td>${product.price.toFixed(2)}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        handleEditPrice(product.id, prompt("Enter new price:"))
+                      }
+                    >
+                      <EditIcon />
+                    </button>{" "}
+                  </td>
+                  <td>{product.quantity}</td>
+                  <td>
+                    {" "}
+                    <button
+                      onClick={() =>
+                        handleEditQuantity(
+                          product.id,
+                          prompt("Enter new quantity:")
+                        )
+                      }
+                    >
+                      <EditIcon />
+                    </button>
+                  </td>
+                  <td>
+                    <button onClick={() => handleDeleteProduct(product.id)}>
+                      <DeleteIcon />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {loading && (
+            <div>
+              <p>Loading Products...</p>
+              <CircularProgress disableShrink />
+            </div>
+          )}
+          <ToastContainer />
+        </div>
+      );
+    } else {
     return <div>You have no authorisation.</div>;
   }
 };
