@@ -22,6 +22,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { auth } from "../config/firebase";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Button } from "@mui/material";
 
 function LoungeBooking() {
   const [locations, setLocations] = useState([]);
@@ -43,7 +44,6 @@ function LoungeBooking() {
     fetchLocations();
     fetchBookings();
   }, []);
-  
 
   const fetchLocations = async () => {
     setLoading(true);
@@ -178,7 +178,7 @@ function LoungeBooking() {
       !selectedEndTime ||
       !selectedDate
     ) {
-      toast.error("Please ensure all fileds are filled before submitting", {
+      toast.error("Please ensure all fields are filled before submitting", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -442,8 +442,15 @@ function LoungeBooking() {
           <form onSubmit={handleSubmit}>
             <div>
               <label htmlFor="location">Location:</label>
-              <select id="location" value={selectedLocation} onChange={handleLocationChange}>
-                <option key="all-lounges" value="">Select a location</option>
+              <select
+                id="location"
+                value={selectedLocation}
+                onChange={handleLocationChange}
+                style={{ width: "200px" }}
+              >
+                <option key="all-lounges" value="">
+                  Select a location
+                </option>
                 {locations.map((location) => (
                   <option key={location.Id} value={location.Name}>
                     {location.Name}
@@ -467,6 +474,7 @@ function LoungeBooking() {
                 id="startTime"
                 value={selectedStartTime}
                 onChange={handleStartTimeChange}
+                style={{ width: "200px" }}
               >
                 <option value="">Select a start time</option>
                 {Array.from({ length: 24 * 4 }).map((_, index) => {
@@ -489,6 +497,7 @@ function LoungeBooking() {
                 id="endTime"
                 value={selectedEndTime}
                 onChange={handleEndTimeChange}
+                style={{ width: "200px" }}
               >
                 <option value="">Select an end time</option>
                 {Array.from({ length: 24 * 4 }).map((_, index) => {
@@ -505,7 +514,9 @@ function LoungeBooking() {
                 })}
               </select>
             </div>
-            <button type="submit">Book Now</button>
+            <Button variant="contained" type="submit">
+              Book Now
+            </Button>
           </form>
         </div>
         <div>
@@ -514,6 +525,7 @@ function LoungeBooking() {
             id="lounge"
             value={selectedLounge}
             onChange={handleLoungeChange}
+            style={{ width: "200px", marginBottom: "15px", marginTop: "15px" }}
           >
             <option value="">All Lounges</option>
             {locations.map((location) => (
@@ -523,9 +535,9 @@ function LoungeBooking() {
             ))}
           </select>
         </div>
-        <button type="button" onClick={handleFilter}>
+        <Button variant="outlined" type="button" onClick={handleFilter}>
           Filter
-        </button>
+        </Button>
         <div>
           <p>
             Bookings for the next 3 days at {selectedLounge || "all lounges"}:
