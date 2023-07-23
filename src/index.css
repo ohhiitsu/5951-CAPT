@@ -47,11 +47,11 @@ body {
 }
 
 .nav li.active {
-  background-color: #555;
+  background-color: #2e0816;
 }
 
 .nav li:hover {
-  background-color: #777;
+  background-color: #9e1e4e;
 }
 
 .product-cards-container {
@@ -138,23 +138,6 @@ hr {
 
 .no-bookings {
   font-style: italic;
-}
-
-.bookings-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.bookings-table th,
-.bookings-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.bookings-table th {
-  font-weight: bold;
-  background-color: #f2f2f2;
 }
 
 .window-closing-section {
@@ -248,23 +231,36 @@ button[type="button"]:hover {
 }
 
 table {
-  width: 100%;
   border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
 }
 
-thead th {
-  background-color: #007bff;
+thead tr {
+  background-color: #2e0816;
   color: #fff;
-  padding: 10px;
+  text-align: center;
 }
 
-tbody td {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+th,
+td {
+  padding: 12px 15px;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
+tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+  border-bottom: 2px solid #7c133a;
 }
 
 .edit-buttons button,
