@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@mui/material";
 
 const SignIn = (e) => {
   const [email, setEmail] = useState("");
@@ -21,9 +22,19 @@ const SignIn = (e) => {
           progress: undefined,
           theme: "light",
         });
-        console.log(userCredential);
+        // console.log(userCredential);
       })
       .catch((error) => {
+        toast.error("Please check your Username/ Password", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         console.log(error);
       });
   };

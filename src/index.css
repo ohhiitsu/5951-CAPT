@@ -16,7 +16,7 @@ body {
 }
 
 .nav {
-  background-color: #333;
+  background-color: #7c133a;
   color :white;
   display: flex;
   justify-content: space-between;
@@ -47,11 +47,11 @@ body {
 }
 
 .nav li.active {
-  background-color: #555;
+  background-color: #2e0816;
 }
 
 .nav li:hover {
-  background-color: #777;
+  background-color: #9e1e4e;
 }
 
 .product-cards-container {
@@ -105,4 +105,179 @@ body {
   max-height: 250px; 
   object-fit: contain;
 }
+
+/* home.jsx */
+
+.home-container {
+  margin: 20px;
+}
+
+.welcome-message {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+hr {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.date {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.booking-section {
+  margin-top: 20px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+}
+
+.no-bookings {
+  font-style: italic;
+}
+
+.window-closing-section {
+  margin-top: 20px;
+}
+
+.window-closing-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.window-closing-list li {
+  margin-bottom: 5px;
+}
+
+.window-closing-list li a {
+  text-decoration: none;
+  color: blue;
+}
+
+.window-closing-list li a:hover {
+  text-decoration: underline;
+}
+
+/* loungebooking.jsx */
+
+.booking-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+}
+
+select,
+input[type="text"] {
+  width: 200px;
+  padding: 5px;
+}
+
+button[type="submit"],
+button[type="button"] {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  background-color: #0069d9;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+}
+
+.loading p {
+  margin-right: 10px;
+}
+
+.no-bookings {
+  margin-top: 20px;
+  font-style: italic;
+}
+
+.no-bookings a {
+  color: #007bff;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+thead tr {
+  background-color: #7c133a;
+  color: #fff;
+  text-align: center;
+}
+
+th,
+td {
+  padding: 12px 15px;
+}
+
+tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+  border-bottom: 2px solid #7c133a;
+}
+
+.edit-buttons button,
+.delete-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.edit-buttons button {
+  margin-right: 5px;
+}
+
+.edit-buttons button:hover,
+.delete-button:hover {
+  background-color: #eaeaea;
+}
+
 
